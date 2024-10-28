@@ -1,0 +1,228 @@
+---
+title: "STAT 425 - Case Study #1"
+output: pdf_document
+date: "2024-10-22"
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+library(car)
+```
+
+In this case study, our objective is to identify the key qualities of a
+Halloween candy that make it desirable based on various attributes. We
+will fit a multiple regression model to explain the desirability of a
+Halloween candy, as measured by the percentage of votes it receives
+(winpercent). Key predictor variables include characteristics such as
+the presence of chocolate, fruity flavors, caramel, peanuts, nougat, and
+other ingredients. Using this model, we will estimate the desirability
+of at least two favorite candies and determine the attributes of the
+ideal Halloween candy.
+
+The significance level that we choose for this case study is alpha =
+0.05.
+
+```{r dataframe}
+df <- read.csv("~/Desktop/uiuc/stat425/Case Study 1/candy-data.csv")
+df
+```
+
+```{r unique candies}
+unique(df$competitorname)
+```
+
+We have chosen to display the five-number summary alongside a box and
+whisker plot to analyze the distribution and variance of the winpercent
+variable. This provides a clearer understanding of the range and spread
+of the data, which will be useful as we proceed with the multiple linear
+regression (MLR) model.
+
+```{r numerical summary & visuals}
+print(summary(df$winpercent))
+
+boxplot(df$winpercent, main = "Box & Whisker Plot of Candy Win%", 
+        ylab = "Candy Win%", col = "lightblue", na.rm = TRUE)
+```
+
+We created this model to visualize the frequency of each candy
+attribute, which helps in understanding the distribution of key
+variables. By examining the count of each attribute (chocolate, fruity,
+caramel, etc.), we can determine which attributes are more common in
+candies, giving us an idea of the factors that may influence the win
+percentage. This stacked bar plot serves as a useful descriptive
+statistic visualization, allowing us to compare the prevalence of
+different variables side by side. Additionally, it highlights potential
+predictors of win percentage in the MLR model, guiding us toward
+identifying which variables might have a stronger effect on candy
+success.
+
+```{r bar plot}
+selected_columns <- df[, c("chocolate", "fruity", "caramel", "peanutyalmondy", "nougat", "crispedricewafer", "hard", "bar", "pluribus")]
+
+
+binary_counts <- colSums(selected_columns)
+
+barplot(binary_counts, 
+        main = "Stacked Bar Plot of Candy Variables", 
+        ylab = "Count of 1s", 
+        xlab = "Candy Attributes", 
+        col = c("lightblue", "lightgreen"), 
+        las = 2,
+        beside = TRUE)
+
+```
+
+The correlation matrix is a valuable tool in regression analysis because
+it helps us identify relationships between independent variables and the
+dependent variable, as well as correlations between independent
+variables themselves. In the context of an MLR (Multiple Linear
+Regression) model, it is important to understand the relationships
+between variables to avoid multicollinearity, which occurs when
+independent variables are highly correlated with one another.
+Multicollinearity can make it difficult to interpret the coefficients of
+the regression model and may inflate standard errors. By reviewing this
+correlation matrix, we can also identify which predictors have strong
+correlations with the dependent variable (winpercent in this case) and
+prioritize those in our model, thereby improving model performance and
+interpretability.
+
+```{r correlation matrix}
+binary_vars <- df[, c("chocolate", "fruity", "caramel", "peanutyalmondy", "nougat", "crispedricewafer", "hard", "bar", "pluribus","sugarpercent","pricepercent","winpercent")]
+
+cor_matrix <- cor(binary_vars)
+cor_matrix
+
+```
+
+```{r full model}
+df_clean <- df[, -which(names(df) == "competitorname")]
+full_model <- lm(winpercent ~ ., data = df_clean)
+
+summary(full_model)
+```
+
+In the full model, we include all potential predictor variables from the
+dataset to assess their relationships with the response variable,
+winpercent. This model is necessary as it allows us to observe the
+statistical significance of each variable, measured by their p-values,
+which indicate whether or not each predictor is contributing meaningful
+information to explain variations in winpercent.
+
+From the model output, we can see which variables have significant
+p-values (below a threshold, typically 0.05) and which do not. In this
+case, chocolate, fruity, and peanutyalmondy are statistically
+significant with p-values well below 0.05. Other variables like nougat,
+bar, pluribus, and others have much higher p-values, meaning they are
+not significant predictors in this model.
+
+Once we identify the statistically insignificant variables, we can
+exclude them from the model, creating a reduced model that only includes
+the significant variables. This process of variable selection is
+important because it simplifies the model, making it more interpretable,
+reduces multicollinearity, and improves generalizability by focusing
+only on the predictors that have a meaningful relationship with the
+response variable.
+
+```{r reduced model}
+reduced_model <- lm(winpercent ~ chocolate + fruity + peanutyalmondy, data = df_clean)
+
+summary(reduced_model)
+```
+
+```{r prediction, actual, residual values}
+candy_row_nums <- which(df$competitorname %in% c("ReeseÕs Peanut Butter cup", "Snickers", "Almond Joy", "Candy Corn"))
+
+actual_values <- df$winpercent[candy_row_nums]
+
+predictions <- predict(reduced_model, newdata = df[candy_row_nums,])
+
+residual_error <- abs(actual_values - predictions)
+```
+
+```{r results dataframe}
+results <- data.frame(
+  Candy = df$competitorname[candy_row_nums],
+  Predicted = round(predictions,2),
+  Actual = round(actual_values,2),
+  Residual = round(residual_error,2)
+)
+
+print(results)
+```
+
+The predictions for the win percentages of Reese's Peanut Butter Cup,
+Snickers, and Almond Joy were all around 66.84%, with Candy Corn having
+a prediction of 35.78%. However, the actual win percentages varied for
+each candy:
+
+Reese's Peanut Butter Cup had an actual win percentage of 84.18%.
+Snickers had an actual win percentage of 76.67%. Almond Joy had an
+actual win percentage of 50.35%. Candy Corn had an actual win percentage
+of 38.01%. The residuals, which represent the difference between the
+actual values and the predicted values, are as follows:
+
+Reese's Peanut Butter Cup: 17.34 Snickers: 9.84 Almond Joy: 17.34 Candy
+Corn: 2.22
+
+These residuals indicate that the model under-predicted the win
+percentages for all candies, particularly for Reese's Peanut Butter Cup
+and Almond Joy, where the predicted values were considerably lower than
+the actual values. Candy Corn had the smallest residual error, meaning
+the model's prediction was closer to its actual value.
+
+```{r hypothesis test (vif) visuals}
+plot(reduced_model, which = 1)
+
+plot(reduced_model, which = 2)
+
+plot(reduced_model, which = 3)
+
+plot(reduced_model, which = 4)
+
+vif(reduced_model)
+```
+
+The VIF values in the output assess the level of multicollinearity in
+the reduced model. Specifically:
+
+Chocolate: 2.262878 Fruity: 2.307766 Peanutyalmondy: 1.211022
+
+In our model, we calculated the Variance Inflation Factor (VIF) for the
+variables chocolate, fruity, and peanutyalmondy. The VIF values we found
+are all below 5, which is the generally accepted threshold for
+multicollinearity. This means that while there may be some correlation
+between these variables and others in the model, it is low enough that
+it doesn’t pose a problem.
+
+Because the VIF values are low (with values of around 2 for chocolate
+and fruity, and 1.2 for peanutyalmondy), we can confidently say that
+multicollinearity is not a concern in our model. In other words, the
+variables are relatively independent of each other, which means they
+won’t cause inflated standard errors or distort the results. This allows
+us to trust the estimates of the regression coefficients for these
+variables without worrying that they’re being affected by strong
+correlations with other predictors.
+
+------------------------------------------------------------------------
+
+Ho: B_chocolate = B_fruity = B_peanutyalmondy = 0 Ha: B_chocolate !=
+B_fruity != B_peanutyalmondy != 0
+
+Conclusion: Since the p-values for chocolate (3.34e-08), fruity
+(0.0354), and peanutyalmondy (0.0118) are all less than the significance
+level of 0.05, we reject the null hypothesis. This means that all three
+predictors are significantly related to the winpercent of candy.
+
+Interpretation of the p-value: The p-values for each variable indicate
+the probability of observing the data, or something more extreme,
+assuming the null hypothesis is true. For chocolate, the p-value is
+extremely small (3.34e-08), indicating very strong evidence against the
+null hypothesis and suggesting that chocolate has a significant positive
+effect on the winpercent. The p-values for fruity (0.0354) and
+peanutyalmondy (0.0118) are also below the 0.05 threshold, indicating
+that these variables also significantly impact the winpercent, though
+with slightly less strength than chocolate. Therefore, at the 5%
+significance level, we conclude that these predictors have a
+statistically significant effect on the winpercent.
