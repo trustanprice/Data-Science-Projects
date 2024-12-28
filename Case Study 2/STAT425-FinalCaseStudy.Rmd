@@ -13,10 +13,12 @@ library(faraway)
 library(lmtest)
 ```
 
+This case study focuses on building predictive models to estimate alcohol content in wines using various chemical properties and measurements. The analysis explores the effectiveness of different modeling approaches, including subset selection and Weighted Least Squares, to address potential issues like heteroscedasticity and multicollinearity. Data cleaning, exploration, and diagnostic testing were performed to ensure the assumptions of linear regression were met and to improve model performance. By comparing models using metrics such as AIC, R-Squared, and MSE, we identified the key predictors and evaluated their significance in explaining alcohol content. The study underscores the importance of rigorous model evaluation and assumption testing in developing robust predictive models.
+
 Part 1:
 
 ```{r}
-df <- read.csv("~/Desktop/uiuc/stat425/Case Study 2/wines.csv")
+df <- read.csv("~/Desktop/uiuc/Fall 2024/stat425/Case Study 2/wines.csv")
 head(df)
 ```
 Summary Statistics:
