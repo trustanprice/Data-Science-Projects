@@ -1,0 +1,464 @@
+---
+title: "STAT 425 - Final Case Study"
+output: pdf_document
+date: "2024-12-04"
+---
+
+```{r setup, include=FALSE}
+library(MASS)
+library(leaps)
+library(pls)
+library(lars)
+library(faraway)
+library(lmtest)
+```
+
+Part 1:
+
+```{r}
+df <- read.csv("~/Desktop/uiuc/stat425/Case Study 2/wines.csv")
+head(df)
+```
+Summary Statistics:
+
+We will first be setting the white wine variable into binary and then checking if there are any missing values in our data frame.
+```{r}
+df$type <- ifelse(df$type == "whitewine", 1, 0)
+print(sum(is.na(df)))
+```
+
+Now we will start the explaratory data analysis, choosing summary statistics and plots to describe the data. To start, we have a correlation matrix:
+```{r}
+cor(df[, sapply(df, is.numeric)], use = "complete.obs")
+```
+This correlation matrix shows low evidence of multicollinearity; however, there are a few instances where multicollinearity is present such as free.sulfur.dioxide and total.sulfur.dioxide.
+```{r}
+boxplot(alcohol ~ type, data = df, main = "Alcohol by Wine Type", 
+        xlab = "Type", ylab = "Alcohol Content", col = "lightblue")
+```
+These box plots show that whitewine and redwine have similar distributions of alcohol content; however, redwine has upper outliters while whitewine does not have any outliers. Having this plot of the alcohol content by wine type can help us understand how important this binary variable will be when predicting alcohol percent.
+```{r}
+hist(df$alcohol, breaks = 20, main = "Distribution of Alcohol Content", 
+     xlab = "Alcohol Content", col = "lightblue", border = "black")
+
+plot(density(df$alcohol, na.rm = TRUE), main = "Density Plot of Alcohol Content", 
+     xlab = "Alcohol Content", col = "blue", lwd = 2)
+```
+This histogram and density plot of alcohol content provide a clear visualization of its distribution across the wine samples. The plot highlights the central tendency and variability, showing the most common alcohol content levels and how they are distributed. These insights help us understand the overall characteristics of the dataset and identify any patterns or outliers in the alcohol content.
+
+
+Model A - Part 2:
+
+We will now start the process of creating of Model A, starting with breaking up the training and testing sets.
+```{r}
+l <- nrow(df)
+
+train_data <- df[1:round(l * 0.8, 0), ]
+test_data <- df[(round(l * 0.8, 0) + 1):l, ]
+
+dim(train_data) 
+dim(test_data) 
+```
+
+Part A)
+
+Here we will begin to construct the full model.
+```{r}
+full_model = lm(alcohol ~., data=df)
+summary(full_model)
+```
+From this model summary, we have one predictor with a p-value of more than 0.05; moreover, total.sulfur.dioxide should be removed from this model because it is not statistically significant.
+```{r}
+step_selected_aic <- step(full_model, direction="backward")
+```
+
+The step selection with AIC also resulted in us eliminating total.sulfur.dioxide because it resulted in a lower model AIC.
+
+```{r}
+aic_full <- AIC(full_model)
+aic_selected <- AIC(step_selected_aic)
+
+cat("AIC of the full model:", aic_full, "\n")
+cat("AIC of the selected model:", aic_selected, "\n")
+```
+
+As we see, the AIC did not decrease significantly, leading us to believe we should run even more tests to confirm that total.sulfur.dioxide is truly statistically insignificant.
+
+```{r}
+n <- nrow(df)
+step_selected_bic <- step(full_model, direction="both", k=log(n))
+```
+```{r}
+bic_full <- BIC(full_model)
+
+bic_selected <- BIC(step_selected_bic)
+
+cat("BIC of the full model:", bic_full, "\n")
+cat("BIC of the selected model:", bic_selected, "\n")
+```
+
+The step selection with bic also tells us to remove total.sulfur.dioxide as it improves the model and lowers the AIC.
+
+Part B:
+
+We begin the leaps and bounds algorithm by outputting the summary of the regsubsets selection.
+```{r}
+regsubsets_selection=regsubsets(alcohol~. -total.sulfur.dioxide, data = df)
+rs = summary(regsubsets_selection)
+rs$which
+```
+```{r}
+rs$adjr2
+```
+The best model is the 8th model.
+```{r}
+rs$cp
+```
+The best model is the 8th model.
+```{r}
+rs$bic
+```
+The best model is the 8th model, making all three of the criterion agree that the best model is the 8th model. This model includes the predictors fixed.acidity, volatile.acidity, citric.acid, residual.sugar, density, pH, sulphates, and typewhitewine.
+
+Part C:
+```{r}
+summary(full_model)$r.sq
+```
+
+This R-squared value represents the percentage of variation in the dependent variable, alcohol, that is explained by the predictors in the model. A value of 82.196% indicates that the model has a strong fit and is highly effective at explaining the variability in alcohol. This suggests that the predictors included in the model are capturing most of the important factors influencing alcohol content.
+```{r}
+pc_model <- lm(alcohol ~ ., data = train_data)
+```
+
+```{r}
+rmse<-function(x,y) sqrt(mean((x-y)^2))
+rmse(fitted(pc_model), train_data$alcohol)
+rmse(predict(pc_model, test_data), test_data$alcohol)
+```
+These values represent the average magnitide of error for predictions. Because our test RMSE is lower than the RMSE for the training data, we can conclude that the model generalizes well to unseen data and that it does not overfit the training data.
+```{r}
+num_predictors <- ncol(train_data) - 1
+n <- min(8, num_predictors)
+alcohol_pcr <-pcr(alcohol ~ ., scale=TRUE, data=train_data, ncomp=n)
+summary(alcohol_pcr)
+```
+This summary provides information about the Principal Component Regression (PCR) model trained on the dataset. The percent of variance explained for the predictors increases as the number of components increases, indicating that the first few components capture a large proportion of the variability in the predictors. For the target variable alcohol, the explained variance increases significantly after two components but plateaus after five, suggesting that additional components contribute little to improving the model's explanatory power for alcohol.
+
+```{r}
+alcohol_pca <- prcomp(train_data[ , -11], scale. = TRUE)
+
+plot(alcohol_pca$sdev[1:20], 
+     ylab = "PCA Std Dev", 
+     xlab = "PCA Number", 
+     type = "l", 
+     main = "Standard Deviations of Principal Components")
+```
+
+This graph shows the standard deviations of the first 20 principal components obtained through PCA, representing the amount of variance explained by each component. The graph demonstrates a steep decline in standard deviations for the first 2-3 components, indicating that they capture most of the variance in the data. After component 3, the decline becomes more gradual, suggesting that additional components contribute progressively less to explaining the variance. This pattern implies that the first few components are the most significant for summarizing the data.
+
+```{r}
+set.seed(135)
+pcr.mse<-RMSEP(alcohol_pcr, newdata=test_data)
+```
+
+```{r}
+optimal_ncomp <- which.min(pcr.mse$val)
+pcr.mse$val[optimal_ncomp]
+```
+This value represents the minimum mean squared error achieved during the Principal Component Regression model evaluation, corresponding to the optimal number of components. This value indicates how well the model performs at its best configuration when the number of components is chosen to minimize prediction error, allowing us to better understand how useful this model is.
+
+```{r}
+set.seed(234)
+modpcrcv<-pcr(alcohol~., scale=TRUE, data=train_data, validation="CV", ncomp=optimal_ncomp)
+
+pcrCV<-RMSEP(modpcrcv, estimate="CV")
+plot(pcrCV)
+```
+This plot demonstrates the relationship between the number of principal components and the Root Mean Square Error of Prediction for the alcohol content model. The sharp decline in RMSEP up to approximately 3 components indicates that these components capture the majority of the variance in the data. Beyond this point, additional components yield minimal improvement, suggesting that around 3 components provide an optimal balance between model accuracy and complexity; however, the minimal improvement could be utilized within the model, leading us to believe further analysis is necessary.
+
+```{r}
+alc_pred <- predict(modpcrcv, test_data, ncomp = optimal_ncomp)
+rmse(alc_pred,test_data$alcohol)
+```
+
+This RMSE value helps us to understand the average magnitude of error for predictions of the Principal Components Model on the test data. A value of 0.8670 shows us that the model does not over fit on the training data and explains the variation of the data well.
+
+Part D:
+```{r}
+ridge_model <- lm.ridge(alcohol ~ ., data = train_data, lambda = seq(0, 5e-8, length.out = 21))
+```
+
+```{r}
+best_lambda_index <- which.min(ridge_model$GCV)
+best_lambda <- ridge_model$lambda[best_lambda_index]
+
+cat("Best lambda:", best_lambda, "\n")
+cat("Minimum GCV:", min(ridge_model$GCV), "\n")
+```
+This Ridge Regression model determines the best value for the regularization parameter, lambda, by minimizing the Generalized Cross-Validation error. The results show that the optimal lambda is 5e-08, which balances model complexity and prediction accuracy by penalizing large coefficients. The corresponding minimum GCV value of 5.439335e-05 indicates a low prediction error, suggesting that the model generalizes well to unseen data.
+```{r}
+train.y<-train_data$alcohol
+train.x<-as.matrix(train_data[,-11])
+```
+
+```{r}
+alc_lasso<-lars(train.x,train.y)
+```
+
+```{r}
+set.seed(123)
+cv.ml<-cv.lars(train.x,train.y)
+```
+This graph visualizes the cross-validated Mean Squared Error against the fraction of the L1-norm for a Lasso regression model. As the fraction of the L1-norm increases, the cross-validated MSE decreases, indicating an improvement in prediction accuracy. However, the rate of improvement slows down significantly after a certain point, suggesting diminishing returns from including additional predictors. The error bars represent variability in the cross-validation process, and the model with the minimum MSE is the optimal choice, balancing prediction accuracy and complexity. This plot highlights the trade-off between model sparsity and predictive performance.
+
+```{r}
+which.min(cv.ml$cv)
+```
+```{r}
+svm<-cv.ml$index[which.min(cv.ml$cv)]
+svm
+```
+
+```{r}
+testx<-as.matrix(test_data[,-11])
+
+predlasso<-predict(alc_lasso, testx, s=svm, mode="fraction")
+rmse(test_data$alcohol, predlasso$fit)
+```
+These values show that the optimal fraction of the L1-norm for the Lasso model, as determined by cross-validation, is approximately 0.989899, corresponding to the 99th index. This fraction represents the level of penalization that minimizes the cross-validated Mean Squared Error (MSE). Using this optimal model, the Root Mean Squared Error (RMSE) on the test data is 0.3841553, indicating good predictive performance and low average error for unseen data. This demonstrates that the Lasso model effectively balances sparsity and prediction accuracy.
+
+Model B - Part 3:
+
+Part A - Checking for Unusual Observations
+```{r}
+df2 <- df[, c(-1, -11)]
+
+alcohol_leverages <- lm.influence(full_model)$hat
+head(alcohol_leverages)
+```
+
+```{r}
+halfnorm(alcohol_leverages, nlab=6, labs=as.character(1:length(alcohol_leverages)), ylab="Leverages")
+```
+This half-normal plot of leverages highlights a few high-leverage observations, such as 4381, 152, 259, and 6345, which deviate significantly from the general trend. The majority of points remain close to the lower leverage values, indicating that most observations have minimal influence on the model. However, these extreme leverage points warrant further investigation to assess their potential impact on the model's performance. Additional diagnostics, like Cook's distance, can confirm whether these points are influential and whether remedial measures are necessary.
+
+```{r}
+n = dim(df2)[1]; 
+n
+```
+
+```{r}
+p = length(variable.names(full_model));
+p
+```
+
+```{r}
+alcohol_leverages_high = alcohol_leverages[alcohol_leverages>2*p/n]
+(num_high_leverage <- length(alcohol_leverages_high))
+(proportion_high_leverage <- num_high_leverage / n)
+```
+
+```{r}
+IQR_y <- IQR(df$alcohol)
+
+Q1_y <- quantile(df$alcohol, 0.25)
+Q3_y <- quantile(df$alcohol, 0.75)
+
+lower_lim_y <- Q1_y - IQR_y
+upper_lim_y <- Q3_y + IQR_y
+
+(vector_lim_y <- c(lower_lim_y, upper_lim_y))
+```
+
+Here we are able to analyze the IQR which suggests that 50% of the alcohol percent distribution is captured between 7.7, Q1, and 13.1, Q3.
+
+```{r}
+high_leverage_threshold <- 2 * p / n
+df_highlev <- df[alcohol_leverages > high_leverage_threshold, ]
+
+
+df_highlev_lower <- df_highlev[df_highlev$alcohol < vector_lim_y[1], ]
+df_highlev_upper <- df_highlev[df_highlev$alcohol > vector_lim_y[2], ]
+
+
+df_highlev_bad <- rbind(df_highlev_lower, df_highlev_upper)
+
+
+cat("Number of high leverage points:", nrow(df_highlev), "\n")
+cat("Number of 'bad' high leverage points:", nrow(df_highlev_bad), "\n")
+
+df_highlev_bad
+```
+All of the observations in this data frame are bad high-leverage points.
+
+To identify outliers, we use the Bonferroni test.
+```{r}
+alcohol_resid = rstudent(full_model); 
+
+bonferroni_cv = qt(.05/(2*n), n-p-1) 
+bonferroni_cv
+```
+
+```{r}
+alcohol_resid_sorted <- sort(abs(alcohol_resid), decreasing = TRUE)[1:10]
+
+print(alcohol_resid_sorted)
+```
+
+```{r}
+alcohol_outliers = alcohol_resid_sorted[abs(alcohol_resid_sorted) > abs(bonferroni_cv)]
+print(alcohol_outliers)
+```
+
+To check for high influential points, we will use Cook’s distance with the cooks.distance R function:
+```{r}
+alcohol_cooks = cooks.distance(full_model)
+sort(alcohol_cooks, decreasing = TRUE)[1:10]
+```
+
+```{r}
+plot(alcohol_cooks)
+```
+
+Based on the rule-of-thumb, Cook’s distance more than or equal to 1, observation 4381 is identified as a high-influential point with a Cook’s distance of approximately 6.08. The remaining observations have much smaller Cook's distances, indicating they do not significantly influence the model's fit. An index plot and half-normal plot confirm that observation 4381 stands out compared to others. Further investigation of this observation is recommended to determine its validity and its impact on the model.
+
+```{r}
+halfnorm(alcohol_cooks, 6, labs=as.character(1:length(alcohol_cooks)), ylab="Cook's distances")
+```
+Due to the lack in concision of the plots, we have chosen to not utilize these results within the conclusion of our case study.
+
+Part B - checking diagnostics and model assumptions
+
+We will first check for homoscedasticity by running a studentized Breusch-Pagan test.
+```{r}
+bptest(full_model)
+```
+The p-value of 2.2e-16 is lower than the significance level (alpha = 0.05). Therefore, we choose to reject the null hypotheses of homoscedasticity and conclude that the constant variance assumption is not satisfied. This result suggests the presence of heteroscedasticity, and further diagnostic tests or corrective measures should be considered to address this issue.
+
+```{r}
+plot(full_model, which=2)
+```
+
+```{r}
+hist(full_model$residuals)
+```
+We will complete a Kolmogorov-Smirnov test for the normality assumption.
+```{r}
+ks.test(full_model$residuals, "pnorm", mean = mean(full_model$residuals), sd = sd(full_model$residuals))
+```
+The p-value of 2.2e-16 is lower than the significance level (alpha = 0.05). Therefore, we choose to reject the null hypotheses of normality. This indicates that the residuals are not normally distributed. 
+
+We will now check the linearity assumption using residuals.
+
+```{r}
+summary(full_model)
+```
+
+The only insignificant predictor seems to be total.sulfur.dioxide. We will now analyze the reduced model accordingly.
+
+```{r}
+model_no_tsd <- lm(alcohol ~ . - total.sulfur.dioxide, data = df)
+y.TSD <- residuals(model_no_tsd)
+x.TSD = lm(total.sulfur.dioxide ~ ., data = df[,-c(2,11)])$residuals
+```
+
+```{r}
+plot(x.TSD, y.TSD, 
+     xlab = "Residuals of total.sulfur.dioxide", 
+     ylab = "Residuals of alcohol", 
+     col = "Darkblue", pch = 3, cex = 1.5)
+abline(lm(y.TSD ~ x.TSD), col = "Darkblue", lwd = 2)
+abline(v = 0, col = "red", lty = 3)
+abline(h = 0, col = "red", lty = 3)
+```
+The residual plot shows a clear pattern, with residuals forming a funnel-like shape and spreading unevenly around the horizontal line. This suggests that the linearity assumption is not fully met, and there may also be heteroscedasticity present, as stated earlier.
+
+Part C - Remedial Measures
+```{r}
+residual_sd <- abs(residuals(full_model)) 
+weights <- 1 / (residual_sd^2)            
+wls_weights <- lm(alcohol ~ . - total.sulfur.dioxide, 
+                  data = df, 
+                  weights = weights)
+summary(wls_weights)
+```
+The first observation from the Weighted Least Squares (WLS) model is its exceptionally high r-squared value, indicating that 99.98% of the variation in the data is explained by the model. This suggests an excellent fit, with the model accounting for nearly all variability in the response variable.
+
+Let us observe what the results would be if we run a standard regression with no weights:
+```{r}
+wls_model <- lm(alcohol ~ . - total.sulfur.dioxide, data = df)
+summary(wls_model)
+```
+As we can observe, there is a significant drop in the r-squared value, indicating that the weighted model is a much better model for this data.
+
+In addition to the WLS numerical summaries, we can also perform a lack-of-fit test.
+```{r}
+df_chisq <- df.residual(wls_weights) 
+sigma2_wls <- summary(wls_model)$sigma^2  
+1 - pchisq(sigma2_wls * df_chisq, df_chisq)
+```
+As you can see, the p-value is far outside of the rejection region of 0.05, which means that we fail to reject the null and conclude that there is not a lack of fit.
+
+Because the normality assumption is questionable, we will use a permutation test to check that our predictors are statistically significant.
+```{r}
+n.iter <- 200 
+fstats <- numeric(n.iter) 
+
+observed_fstat <- summary(wls_weights)$fstatistic[1]
+
+for (i in 1:n.iter) {
+  newdata <- df
+  
+  newdata$alcohol <- sample(df$alcohol)
+  
+  wls_perm <- lm(alcohol ~ fixed.acidity + volatile.acidity + citric.acid + 
+                            residual.sugar + chlorides + free.sulfur.dioxide + density + pH + sulphates + type, 
+                 data = newdata, 
+                 weights = weights) 
+
+  fstats[i] <- summary(wls_perm)$fstatistic[1]
+}
+
+p_value <- sum(fstats >= observed_fstat) / n.iter
+
+cat("P-value from permutation test:", p_value, "\n")
+```
+
+When running the permutation test with the statistically significant predictors, the p-value is approximately 0, which means we reject the null hypothesis that the predictors have no effect. This result provides strong evidence that the predictors in the model explain a significant portion of the variability in the response variable. Consequently, we choose to work with the wls model as it captures the relationships in the data more effectively compared to the full model.
+
+In the case study, we began with the initial subsets selection model. This model included predictors that were selected based on statistical significance, using criteria such as adjusted r-squared, Mallows' CP, and BIC. However, we identified shortcomings, such as residual diagnostics issues and potential violations of model assumptions, particularly linearity, homoscedasticity, and normality. To address these issues, we explored alternative models.
+
+We then moved to the Weighted Least Squares model, which uses weights to account for heteroscedasticity. The weights were computed as the inverse of the squared residuals from the reduced model, giving less influence to observations with higher variance. This approach significantly improved the model fit, as evidenced by the extremely high r-squared value, 99.98%, which shows that the WLS model explains almost all the variation in the response variable.
+
+To ensure the correctness and robustness of the WLS model, we conducted a series of diagnostic tests throughout the analysis:
+- Permutation tests confirmed the statistical significance of the predictors.
+- Cook’s distance analysis checked for influential points.
+- Residual diagnostics ensured that assumptions of linearity and homoscedasticity were addressed.
+- Chi-squared tests validated the lack of fit, supporting the choice of the WLS model.
+
+In summary, the final WLS model addressed the shortcomings of the initial subsets model by correcting for heteroscedasticity, improving explanatory power, and passing key diagnostic tests. Through this process, we arrived at a robust model that accurately explains the relationship between the predictors and the response variable, alcohol content.
+
+Part D - ANOVA Test
+
+Let us now use an ANOVA test to analyze the results of all three models conducted in this case study, those being the full model, subsets selected model (reduced_model), and the WLS model.
+
+```{r}
+reduced_model <- lm(alcohol ~ fixed.acidity + volatile.acidity + citric.acid + 
+                               residual.sugar + 
+                               density + pH + sulphates + type, data = df)
+summary(full_model)
+summary(reduced_model)
+summary(wls_weights)
+
+anova(reduced_model, wls_model, full_model)
+
+
+cat("AIC of subsets selection model:", AIC(reduced_model), "\n")
+cat("AIC of WLS model:", AIC(wls_weights), "\n")
+cat("AIC of full model:", AIC(full_model), "\n")
+```
+Model A, the subsets selection model, focuses on selecting a subset of predictors based on statistical criteria such as adjusted r-squared, BIC, and Mallows' CP, aiming for a balance between simplicity and explanatory power. It retains only the most significant predictors, making the model more interpretable but potentially prone to issues like heteroscedasticity.
+
+Model B, the Weighted Least Squares model, begins with the full model, assessing predictors based on their p-values and statistical significance. Unlike Model A, which uses a selection process to identify a subset of predictors, Model B retains all predictors initially and focuses on addressing potential issues with model assumptions. Diagnostics such as residual plots, normality tests, and homoscedasticity checks are performed to identify departures from assumptions, such as non-constant variance.
+
+The key difference lies in the treatment of residual variance: Model A assumes constant variance, whereas Model B explicitly accounts for heteroscedasticity through weights. Despite the added complexity, Model B provides a more robust fit by addressing diagnostic issues identified in Model
