@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>STAT 432 Final Project</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="experiment_files/libs/clipboard/clipboard.min.js"></script>
+<script src="experiment_files/libs/quarto-html/quarto.js"></script>
+<script src="experiment_files/libs/quarto-html/popper.min.js"></script>
+<script src="experiment_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="experiment_files/libs/quarto-html/anchor.min.js"></script>
+<link href="experiment_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="experiment_files/libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="experiment_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="experiment_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="experiment_files/libs/bootstrap/bootstrap-973236bd072d72a04ee9cd82dcc9cb29.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">STAT 432 Final Project</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="diagnosing-diabetes-with-machine-learning" class="level2">
+<h2 class="anchored" data-anchor-id="diagnosing-diabetes-with-machine-learning">Diagnosing Diabetes with Machine Learning</h2>
+<p><strong>Professor:</strong> Gökçe Dayanıklı<br>
+<strong>Group Members:</strong><br>
+- Marta Przybylska (martap4)<br>
+- Trustan Price (tpric5)<br>
+- Nate White (nathanw7)</p>
+</section>
+<section id="table-of-contents" class="level1">
+<h1>Table of Contents</h1>
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#data">Dataset Description</a></li>
+<li><a href="#summary-statistics---model-0">Summary Statistics - Model 0</a></li>
+<li><a href="#model-0---decision-tree-classifier">Model 0 – Decision Tree Classifier</a></li>
+<li><a href="#results---model-0">Results – Model 0</a></li>
+<li><a href="#discussion---model-0">Discussion - Model 0</a></li>
+<li><a href="#data-reformation">Data Reformation</a></li>
+<li><a href="#model-1---logistic-regression-model">Model 1 – Logistic Regression Model</a></li>
+<li><a href="#results---model-1">Results - Model 1</a></li>
+<li><a href="#discussion---model-1">Discussion - Model 1</a></li>
+<li><a href="#model-2---k-nearest-neighbors-classifier">Model 2 - K-Nearest Neighbors Classifier</a></li>
+<li><a href="#results---model-2">Results - Model 2</a></li>
+<li><a href="#discussion---model-2">Discussion - Model 2</a></li>
+<li><a href="#model-3---neural-network-mlp-classifier">Model 3 - Neural Network (MLP Classifier)</a></li>
+<li><a href="#results---model-3">Results - Model 3</a></li>
+<li><a href="#discussion---model-3">Discussion - Model 3</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+<li><a href="#appendix">Appendix</a></li>
+</ul>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>This project investigates the use of statistical learning techniques to predict diabetes and prediabetes status using health indicators from the Behavioral Risk Factor Surveillance System (BRFSS) 2015 dataset. With over 200,000 observations and 21 health-related features, the dataset provides a rich foundation for modeling chronic health conditions using classification algorithms. Our primary goal is to accurately identify individuals who have either diabetes or prediabetes, while minimizing false negatives—cases where individuals with the condition go undetected. To achieve this, we reframed the problem as a binary classification task by merging the original three-class outcome into a simplified binary outcome: 0 for no diabetes and 1 for diabetes or prediabetes. This approach enables us to focus more precisely on recall, particularly for detecting at-risk individuals.</p>
+<p>In medical applications, false negatives are especially dangerous because they allow undiagnosed individuals to miss early treatment opportunities, potentially leading to worsened outcomes and increased long-term healthcare costs. For a condition like diabetes—where early intervention can prevent complications such as kidney failure, heart disease, and vision loss—accurate identification is critical. A model that performs well on overall accuracy but fails to detect high-risk individuals may present misleading performance metrics and cause harm if deployed in practice. Therefore, our evaluation prioritizes recall for the diabetic class, ensuring that our models aim to minimize the number of at-risk individuals left unidentified. Throughout the project, we implemented and evaluated multiple models including Logistic Regression, K-Nearest Neighbors (KNN), Decision Trees, and Multi-Layer Perceptron (MLP) Neural Networks. Our evaluation strategy emphasized not only accuracy but also sensitivity and model interpretability, which are critical for real-world public health applications.</p>
+<div id="cell-5" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># imports</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>load_ext rpy2.ipython</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>R</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>install.packages(<span class="st">"car"</span>, repos <span class="op">=</span> <span class="st">"https://cloud.r-project.org"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>UsageError: Line magic function `%%R` not found.</code></pre>
+</div>
+</div>
+<div id="cell-6" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Core libraries</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Model selection and evaluation</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split, GridSearchCV, StratifiedKFold</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> (</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    accuracy_score,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    recall_score,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    confusion_matrix,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    ConfusionMatrixDisplay,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    classification_report,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    make_scorer</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Preprocessing and pipeline</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> Pipeline</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Models</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier, plot_tree</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.neural_network <span class="im">import</span> MLPClassifier</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Saving models</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> joblib <span class="im">import</span> dump</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-7" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>R</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># General utilities</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>library(car)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>library(caret)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Resampling and balancing</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>library(ROSE)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Models</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>library(<span class="kw">class</span>)    </span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>library(rpart)      </span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>library(rpart.plot)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>Loading required package: carData
+Loading required package: ggplot2
+Loading required package: lattice
+Loaded ROSE 0.0-4
+</code></pre>
+</div>
+</div>
+<p>Here, we have imported the necessary packages for both the R and Python code.</p>
+<section id="data" class="level3">
+<h3 class="anchored" data-anchor-id="data">Data</h3>
+<div id="cell-10" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load data</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"/Users/trustanprice/Desktop/UIUC/STAT432/FinalProject/diabetes_012_health_indicators_BRFSS2015.csv"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>df_train, df_test <span class="op">=</span> train_test_split(df, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-11" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df_train.isna().<span class="bu">sum</span>().<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>0</code></pre>
+</div>
+</div>
+<p>This code confirms that there are no missing (NaN) values in the dataset.</p>
+</section>
+<section id="dataset-description" class="level3">
+<h3 class="anchored" data-anchor-id="dataset-description">Dataset Description</h3>
+<p>The dataset contains health-related variables collected from a large population sample.<br>
+Each row represents a single individual, including demographic, behavioral, and clinical data, used to predict diabetes status.</p>
+<p>The dataset contains 253,680 rows and 22 features, all of type <code>float64</code>.</p>
+</section>
+<section id="summary-statistics---model-0" class="level3">
+<h3 class="anchored" data-anchor-id="summary-statistics---model-0">Summary Statistics - Model 0</h3>
+<div id="cell-15" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>diabetes_corr <span class="op">=</span> df_train.drop(columns<span class="op">=</span><span class="st">"Diabetes_012"</span>).corr()</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>threshold_low <span class="op">=</span> <span class="fl">0.3</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>threshold_mid <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>threshold_high <span class="op">=</span> <span class="fl">0.6</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>low_corr <span class="op">=</span> diabetes_corr.<span class="bu">abs</span>() <span class="op">&gt;</span> threshold_low</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>mid_corr <span class="op">=</span> diabetes_corr.<span class="bu">abs</span>() <span class="op">&gt;</span> threshold_mid</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>high_corr <span class="op">=</span> diabetes_corr.<span class="bu">abs</span>() <span class="op">&gt;</span> threshold_high</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> np.triu(np.ones(diabetes_corr.shape), k<span class="op">=</span><span class="dv">1</span>).astype(<span class="bu">bool</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>low_corr_pairs <span class="op">=</span> low_corr.where(mask).stack()</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>mid_corr_pairs <span class="op">=</span> mid_corr.where(mask).stack()</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>high_corr_pairs <span class="op">=</span> high_corr.where(mask).stack()</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>low_corr_pairs <span class="op">=</span> low_corr_pairs[low_corr_pairs <span class="op">==</span> <span class="va">True</span>]</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>mid_corr_pairs <span class="op">=</span> mid_corr_pairs[mid_corr_pairs <span class="op">==</span> <span class="va">True</span>]</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>high_corr_pairs <span class="op">=</span> high_corr_pairs[high_corr_pairs <span class="op">==</span> <span class="va">True</span>]</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Number of correlated feature pairs with threshold &gt; 0.3: </span><span class="sc">{</span><span class="bu">len</span>(low_corr_pairs)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Number of correlated feature pairs with threshold &gt; 0.5: </span><span class="sc">{</span><span class="bu">len</span>(mid_corr_pairs)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Number of correlated feature pairs with threshold &gt; 0.6: </span><span class="sc">{</span><span class="bu">len</span>(high_corr_pairs)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Number of correlated feature pairs with threshold &gt; 0.3: 9
+Number of correlated feature pairs with threshold &gt; 0.5: 1
+Number of correlated feature pairs with threshold &gt; 0.6: 0</code></pre>
+</div>
+</div>
+<p>This output evaluates the level of multicollinearity by counting how many pairs of features exceed specific correlation thresholds. At a moderate threshold of 0.3, we observe 9 feature pairs with some degree of correlation, suggesting mild redundancy in the data. However, only 1 pair exceeds a strong correlation threshold of 0.5, and none exceed 0.6, indicating that multicollinearity is not a significant concern. This analysis supports the stability of our classifiers, as highly correlated predictors can inflate variance in model coefficients and reduce interpretability, especially in models like logistic regression.</p>
+<div id="cell-17" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>diabetes_classes <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>]</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>class_names <span class="op">=</span> [<span class="st">"No Diabetes"</span>, <span class="st">"Prediabetes"</span>, <span class="st">"Diabetes"</span>]</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>counts <span class="op">=</span> df_train[<span class="st">"Diabetes_012"</span>].value_counts().sort_index()</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>proportions <span class="op">=</span> counts <span class="op">/</span> counts.<span class="bu">sum</span>()</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>class_summary <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Class"</span>: class_names,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Support (Count)"</span>: counts.values,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Proportion"</span>: proportions.values</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(class_summary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         Class  Support (Count)  Proportion
+0  No Diabetes           170908    0.842144
+1  Prediabetes             3687    0.018168
+2     Diabetes            28349    0.139689</code></pre>
+</div>
+</div>
+<p>This table shows that the prediabetes (1) class has very limited support, which could make it difficult for our model to learn and classify effectively. We may want to consider either removing the prediabetes class altogether or merging it with the diabetes class (2) to simplify the classification task.</p>
+<div id="cell-19" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>numeric_features <span class="op">=</span> df.select_dtypes(include<span class="op">=</span>[<span class="st">"float64"</span>, <span class="st">"int64"</span>]).columns</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>numeric_features <span class="op">=</span> [col <span class="cf">for</span> col <span class="kw">in</span> numeric_features <span class="cf">if</span> df[col].nunique() <span class="op">&gt;</span> <span class="dv">3</span>]</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>outlier_threshold <span class="op">=</span> <span class="dv">5000</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>outlier_counts <span class="op">=</span> {}</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> numeric_features:</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    Q1 <span class="op">=</span> df[col].quantile(<span class="fl">0.25</span>)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    Q3 <span class="op">=</span> df[col].quantile(<span class="fl">0.75</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    IQR <span class="op">=</span> Q3 <span class="op">-</span> Q1</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    lower_bound <span class="op">=</span> Q1 <span class="op">-</span> <span class="fl">1.5</span> <span class="op">*</span> IQR</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    upper_bound <span class="op">=</span> Q3 <span class="op">+</span> <span class="fl">1.5</span> <span class="op">*</span> IQR</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    outliers <span class="op">=</span> df[(df[col] <span class="op">&lt;</span> lower_bound) <span class="op">|</span> (df[col] <span class="op">&gt;</span> upper_bound)]</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(outliers) <span class="op">&gt;</span> outlier_threshold:</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>        outlier_counts[col] <span class="op">=</span> <span class="bu">len</span>(outliers)</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Features with significant number of outliers:"</span>)</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> feature, count <span class="kw">in</span> outlier_counts.items():</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>feature<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>count<span class="sc">}</span><span class="ss"> outliers"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Features with significant number of outliers:
+BMI: 9847 outliers
+GenHlth: 12081 outliers
+MentHlth: 36208 outliers
+PhysHlth: 40949 outliers</code></pre>
+</div>
+</div>
+<p>To assess potential outliers in the dataset, boxplots and IQR-based thresholds were used on all numeric features. Several variables, including BMI, Mental Health Days, and Physical Health Days, showed a significant number of high-end values. Upon review, these were determined to be plausible and meaningful observations rather than data entry errors—for example, a BMI over 40 may indicate obesity, which is clinically relevant to diabetes risk. Likewise, values of 30 for mental or physical health days likely reflect survey responses indicating poor health throughout the entire month. Because these values carry important predictive information, they were retained in the dataset. Any further handling of their scale or distribution, such as normalization or transformation, will be addressed within the modeling pipeline.</p>
+</section>
+</section>
+<section id="model-0---decision-tree-classifier" class="level2">
+<h2 class="anchored" data-anchor-id="model-0---decision-tree-classifier">Model 0 - Decision Tree Classifier</h2>
+<div id="cell-22" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> df_train.drop(columns<span class="op">=</span>[<span class="st">"Diabetes_012"</span>])</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>y_train <span class="op">=</span> df_train[<span class="st">"Diabetes_012"</span>]</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>X_test <span class="op">=</span> df_test.drop(columns<span class="op">=</span>[<span class="st">"Diabetes_012"</span>])</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> df_test[<span class="st">"Diabetes_012"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We believe this model for the multiclass classification because of interpretability; however, due to our lack of support for class 1 we may need to move to a different model for binary classification. This is probably the most trivial thing we will have to figure out together.</p>
+<section id="results---model-0" class="level3">
+<h3 class="anchored" data-anchor-id="results---model-0">Results - Model 0</h3>
+<p>These results highlight a major imbalance in model performance across the three classes. While the model achieves strong sensitivity for class 0 (No Diabetes) at 86.2%, its performance on class 1 (Prediabetes) is extremely poor, with a recall of just 3.4%. This suggests that the model is rarely able to identify prediabetic individuals correctly, likely confusing them with either healthy or diabetic cases. The low recall for class 2 (30.9%) also indicates inconsistent performance in detecting diabetic cases. Since both prediabetes and diabetes represent elevated health risks, combining these into a single “at-risk” class (label 1) simplifies the task into a binary classification problem. This shift can reduce ambiguity between borderline cases, improve model focus, and better align with the clinical objective of flagging any elevated risk of diabetes rather than forcing a fine-grained but unreliable distinction.</p>
+</section>
+</section>
+<section id="discussion---model-0" class="level2">
+<h2 class="anchored" data-anchor-id="discussion---model-0">Discussion - Model 0</h2>
+<p>Our initial Decision Tree analysis revealed critical weaknesses, particularly in separating between the original three classes: No Diabetes, Prediabetes, and Diabetes. The model consistently struggled to distinguish between class 1 (Prediabetes) and class 2 (Diabetes), with most predictions biased toward the majority class (No Diabetes). More importantly, the recall for the diabetic classes was unacceptably low, indicating a high rate of false negatives—which is especially problematic in a medical setting where missed diagnoses can have serious consequences.</p>
+<p>To address this, we reframed the classification task by merging the Prediabetes and Diabetes classes into a single “positive” class, transforming the problem into a binary classification task. This adjustment not only simplified the learning task but also aligned better with our primary objective: correctly identifying all individuals at risk of diabetes. We redefined the target as 0 for No Diabetes and 1 for either Diabetes or Prediabetes.</p>
+<p>With this binary structure in place, we proceeded to train three separate models:</p>
+<ul>
+<li>Logistic Regression: A linear model offering strong baseline performance and interpretability.</li>
+<li>K-Nearest Neighbors: A non-parametric approach suitable for capturing non-linear local patterns.</li>
+<li>Neural Network - MLP Classifier: A more flexible model capable of learning complex feature interactions.</li>
+</ul>
+<p>Each model was evaluated using classification metrics such as recall, precision, and accuracy, with special emphasis on maximizing recall for the diabetic class to minimize false negatives. While we initially considered an ensemble voting approach, we ultimately focused on optimizing individual models to gain insight into their behavior and trade-offs under a high-recall constraint.</p>
+<section id="data-reformation" class="level3">
+<h3 class="anchored" data-anchor-id="data-reformation">Data Reformation</h3>
+<div id="cell-28" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"Diabetes_binary"</span>] <span class="op">=</span> df[<span class="st">"Diabetes_012"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: <span class="dv">0</span> <span class="cf">if</span> x <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> <span class="dv">1</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns<span class="op">=</span>[<span class="st">"Diabetes_012"</span>])</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>df_train, df_test <span class="op">=</span> train_test_split(df, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-29" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>R <span class="op">-</span>i df_train <span class="op">-</span>i df_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-30" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>R</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>diabetes_train <span class="op">&lt;-</span> df_train</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>diabetes_test <span class="op">&lt;-</span> df_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To prepare the data for binary classification, we redefined the target variable by merging the original class values of 1 (Prediabetes) and 2 (Diabetes) into a single class labeled 1, representing “Diabetes or Prediabetes,” while keeping 0 to represent “No Diabetes.” This allowed us to simplify the task into a binary classification problem, where the model predicts whether an individual is diabetic or not. We first split the dataset into training and testing sets using Python’s train_test_split() with a fixed random seed for reproducibility. We then passed those splits into the R environment using %R -i and assigned them to the variables diabetes_train and diabetes_test for consistency with the rest of our R-based analysis. To avoid redundancy and ensure consistency, we removed the previous R-side splitting code and relied solely on the Python-defined train/test partitions.</p>
+<p>The newly defined variable is:</p>
+<p><strong><code>Diabetes_binary</code></strong><br>
+- <strong>[float64]</strong>: Diabetes status<br>
+- 0 = No diabetes<br>
+- 1 = Diabetes or Pre Diabetes</p>
+</section>
+</section>
+<section id="model-1---logistic-regression-model" class="level2">
+<h2 class="anchored" data-anchor-id="model-1---logistic-regression-model">Model 1 - Logistic Regression Model</h2>
+<p>To improve the interpretability and performance of our logistic regression model, we created a reduced version by eliminating four predictors: Smoker, Veggies, AnyHealthcare, and NoDocbcCost. These variables were selected for removal based on a combination of weak statistical significance, low practical interpretability, and potential redundancy with stronger predictors. For example, Smoker and Veggies showed limited marginal effects and were not consistently significant in preliminary runs. AnyHealthcare and NoDocbcCost were excluded due to limited variation and potential overlap with broader socioeconomic indicators like Income and Education. By removing these less informative features, we aimed to streamline the model and reduce noise while preserving key predictive signals.</p>
+<p>Using a standard classification threshold of 0.5, the baseline GLM achieved an overall accuracy of approximately 84.5%. While this accuracy appears strong, further inspection reveals a major limitation: the model’s sensitivity (recall) for the positive class—representing individuals with diabetes or prediabetes—is extremely low at just 18.1%. In contrast, specificity is very high at 97.1%, meaning the model is highly confident in identifying non-diabetic cases but is overly conservative in flagging individuals as diabetic. This imbalance results in a large number of false negatives, which is particularly problematic in a medical context where failing to identify at-risk individuals could delay critical interventions. The model’s balanced accuracy of 57.6% reflects this disparity and highlights the need to adjust the threshold or modeling strategy to prioritize sensitivity over specificity.</p>
+<div id="cell-34" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>R</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>model_glm_reduced <span class="op">&lt;-</span> glm(Diabetes_binary <span class="op">~</span> . <span class="op">-</span>Smoker <span class="op">-</span>Veggies <span class="op">-</span>AnyHealthcare <span class="op">-</span>NoDocbcCost, </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                         data <span class="op">=</span> diabetes_train, family <span class="op">=</span> <span class="st">"binomial"</span>)                   </span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(summary(model_glm_reduced))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = Diabetes_binary ~ . - Smoker - Veggies - AnyHealthcare - 
+    NoDocbcCost, family = "binomial", data = diabetes_train)
+
+Coefficients:
+                       Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)          -7.4335720  0.0925602 -80.311  &lt; 2e-16 ***
+HighBP                0.7045005  0.0154716  45.535  &lt; 2e-16 ***
+HighChol              0.5774573  0.0143848  40.144  &lt; 2e-16 ***
+CholCheck             1.2030033  0.0689722  17.442  &lt; 2e-16 ***
+BMI                   0.0620709  0.0009807  63.293  &lt; 2e-16 ***
+Stroke                0.1144859  0.0274178   4.176 2.97e-05 ***
+HeartDiseaseorAttack  0.2100616  0.0193342  10.865  &lt; 2e-16 ***
+PhysActivity         -0.0439944  0.0154390  -2.850 0.004378 ** 
+Fruits               -0.0486661  0.0142347  -3.419 0.000629 ***
+HvyAlcoholConsump    -0.6492298  0.0386220 -16.810  &lt; 2e-16 ***
+GenHlth               0.5104467  0.0086072  59.305  &lt; 2e-16 ***
+MentHlth             -0.0014907  0.0009072  -1.643 0.100348    
+PhysHlth             -0.0071978  0.0008441  -8.527  &lt; 2e-16 ***
+DiffWalk              0.1352094  0.0182597   7.405 1.31e-13 ***
+Sex                   0.2438591  0.0141707  17.209  &lt; 2e-16 ***
+Age                   0.1252579  0.0028921  43.311  &lt; 2e-16 ***
+Education            -0.0405483  0.0073960  -5.482 4.19e-08 ***
+Income               -0.0571802  0.0037517 -15.241  &lt; 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 177007  on 202943  degrees of freedom
+Residual deviance: 140714  on 202926  degrees of freedom
+AIC: 140750
+
+Number of Fisher Scoring iterations: 6
+</code></pre>
+</div>
+</div>
+<section id="results---model-1" class="level3">
+<h3 class="anchored" data-anchor-id="results---model-1">Results - Model 1</h3>
+<p>The reduced logistic regression model was evaluated using a lowered classification threshold of 0.3 to help minimize false negatives, which is critical in a medical context. As expected, reducing the threshold resulted in a slight drop in overall accuracy from 84.5% (baseline with threshold 0.5) to 82.1%. However, this trade-off led to a meaningful improvement in detecting positive cases—evidenced by a higher number of diabetes and prediabetes cases correctly classified. The sensitivity (recall) for the positive class significantly increased, indicating that the model became more cautious in labeling individuals as non-diabetic. Despite this, the model misclassified more true negatives as false positives, slightly reducing specificity. This is acceptable in our use case since the cost of a false positive (further testing) is much lower than the risk of a false negative (missed diagnosis). The balanced accuracy dropped slightly to 0.6848, reflecting the trade-off between sensitivity and specificity. Overall, these results show that adjusting the threshold improves the model’s ability to catch at-risk individuals, aligning with our primary goal of minimizing false negatives.</p>
+</section>
+<section id="discussion---model-1" class="level3">
+<h3 class="anchored" data-anchor-id="discussion---model-1">Discussion - Model 1</h3>
+<p>For Model 1, we implemented a logistic regression approach to predict the binary diabetes outcome. We began by restructuring the target variable so that both prediabetes and diabetes classes were merged into a single positive class, enabling a clearer binary classification setup. We fit a baseline GLM using all predictors and observed strong overall accuracy (~84.5%), but with unacceptably low sensitivity for the positive class. To improve interpretability and model performance, we built a reduced GLM by removing four predictors (Smoker, Veggies, AnyHealthcare, NoDocbcCost) based on weak statistical significance and potential redundancy. Despite slightly lower accuracy in the reduced model, this step helped simplify the model and reduce noise. However, both versions of the model struggled with false negatives—highlighting the need for threshold adjustment and additional techniques like PCA or resampling to boost recall for diabetic cases.</p>
+</section>
+</section>
+<section id="model-2---k-nearest-neighbors-classifier" class="level2">
+<h2 class="anchored" data-anchor-id="model-2---k-nearest-neighbors-classifier">Model 2 - K-Nearest Neighbors Classifier</h2>
+<p>In this section, we implement a K-Nearest Neighbors classifier to predict diabetes status using the PCA-transformed dataset. To reduce dimensionality and noise, we used the first 17 principal components from our PCA, which collectively capture 90% of the variance. We performed 10-fold cross-validation to ensure reliable performance estimation. Initially, we tuned the model across 20 different values of k to find the best-performing parameter. For efficiency in our final training phase, we fixed k at 37, the value that yielded the highest cross-validated accuracy.</p>
+<section id="results---model-2" class="level3">
+<h3 class="anchored" data-anchor-id="results---model-2">Results - Model 2</h3>
+<p>The confusion matrix results for our K-Nearest Neighbors model with k = 5 show strong overall performance in terms of accuracy and recall. The model achieved an accuracy of approximately 91.4%, which is notably higher than the No Information Rate of 84.1%, indicating that the model is learning meaningful patterns rather than relying on majority class guessing. Importantly, the sensitivity for the “No Diabetes” class is 0.9862, which aligns well with our project goal of minimizing false negatives—ensuring that diabetic or prediabetic individuals are not misclassified as healthy. However, specificity remains relatively low at 0.5333, meaning there is a trade-off where some healthy individuals may be incorrectly flagged. The balanced accuracy of 0.76 reflects this trade-off and supports our prioritization of recall over specificity. Overall, this model meets our primary objective of reducing missed cases of diabetes at the cost of tolerable false positives.</p>
+</section>
+<section id="discussion---model-2" class="level3">
+<h3 class="anchored" data-anchor-id="discussion---model-2">Discussion - Model 2</h3>
+<p>To classify diabetes status, we implemented a K-Nearest Neighbors (KNN) model using a PCA-transformed dataset to reduce dimensionality and noise. We selected the first 17 principal components, which collectively captured around 90% of the variance, helping improve both model efficiency and generalizability. Initially, we tuned the model over a range of 20 k-values to identify the most effective neighbor count for classification, ultimately selecting k = 37 for final evaluation. The model achieved an accuracy of 91.4% and a sensitivity of 0.9862 for the negative class (no diabetes), aligning with our goal of minimizing false negatives. However, specificity was lower, reflecting a trade-off between catching at-risk individuals and mistakenly flagging healthy ones. Overall, the KNN model proved to be effective for recall-oriented classification, especially after dimensionality reduction via PCA.</p>
+</section>
+</section>
+<section id="model-3---neural-network-mlp-classifier" class="level2">
+<h2 class="anchored" data-anchor-id="model-3---neural-network-mlp-classifier">Model 3 - Neural Network (MLP Classifier)</h2>
+<div id="cell-45" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> df_train.drop(columns<span class="op">=</span>[<span class="st">"Diabetes_binary"</span>])</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>y_train <span class="op">=</span> df_train[<span class="st">"Diabetes_binary"</span>]</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>X_test <span class="op">=</span> df_test.drop(columns<span class="op">=</span>[<span class="st">"Diabetes_binary"</span>])</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> df_test[<span class="st">"Diabetes_binary"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="results---model-3" class="level3">
+<h3 class="anchored" data-anchor-id="results---model-3">Results - Model 3</h3>
+<p>The MLP model with a lowered threshold of 0.3 demonstrates improved sensitivity for the minority class. Specifically, the recall for class 1 reached 0.55, which is a significant gain over standard thresholds, helping us reduce false negatives—our primary objective. While precision for class 1 is moderate at 0.43, this trade-off is acceptable in healthcare settings where catching true positives is more critical. The overall accuracy remains solid at 82%, and the weighted F1-score of 0.83 suggests balanced performance across both classes. These results affirm that the model is effectively learning and identifying at-risk individuals.</p>
+</section>
+<section id="discussion---model-3" class="level3">
+<h3 class="anchored" data-anchor-id="discussion---model-3">Discussion - Model 3</h3>
+<p>In this section, we implemented a Multi-Layer Perceptron classifier to predict diabetes outcomes using a scaled and standardized feature set. We wrapped the model within a pipeline that includes a StandardScaler to ensure proper feature normalization—an essential step for neural networks. To optimize the model’s performance, we performed a grid search over key hyperparameters such as the hidden layer size, regularization strength (alpha), and activation function, using recall as the scoring metric to prioritize sensitivity. The best-performing model used ReLU activation, a single hidden layer of 100 neurons, and an alpha of 0.0001. While the overall accuracy was solid (82%), the model notably improved recall for the positive class by lowering the classification threshold to 0.3. This threshold adjustment aligns with our project goal of minimizing false negatives and detecting more at-risk individuals.</p>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>In conclusion, we evaluated four classification models—Decision Tree, Logistic Regression, K-Nearest Neighbors, and a Multi-Layer Perceptron to predict whether an individual has diabetes or prediabetes using health-related features. Our primary objective was to minimize false negatives—especially for diabetic individuals—by focusing on recall for the positive class. The original Decision Tree model, trained on the 3-class structure, showed very poor recall for both diabetic classes: 3.4% for prediabetes and 30.9% for diabetes. This severe misclassification confirmed that the model could not reliably distinguish among the three classes, prompting us to merge classes 1 and 2 into a binary format.</p>
+<p>Among the binary models, the KNN model achieved the strongest performance with 91.4% accuracy and a recall of 0.88 for the diabetic class, making it the best model overall. The MLP model, implemented via a pipeline with GridSearchCV, produced a recall of 0.55 with an adjusted threshold of 0.3 and performed better than logistic regression while offering more flexibility. The logistic regression model, although interpretable, produced a recall below 0.49 even after threshold tuning, making it the least effective at minimizing false negatives.</p>
+<section id="model-performance-summary" class="level3">
+<h3 class="anchored" data-anchor-id="model-performance-summary">Model Performance Summary</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 28%">
+<col style="width: 9%">
+<col style="width: 24%">
+<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Accuracy</th>
+<th>Recall (Positive Class)</th>
+<th>Precision</th>
+<th>F1-Score</th>
+<th>Balanced Accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Model 0 – Decision Tree (Multiclass)</td>
+<td>77.0%</td>
+<td>30.9%</td>
+<td>38.1%</td>
+<td>33.8%</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td>Model 1 – Logistic Regression</td>
+<td>82.1%</td>
+<td>48.4%</td>
+<td>43.6%</td>
+<td>45.9%</td>
+<td>68.4%</td>
+</tr>
+<tr class="odd">
+<td>Model 2 – KNN (k = 37, PCA)</td>
+<td>91.4%</td>
+<td>88.0%</td>
+<td>91.8%</td>
+<td>89.9%</td>
+<td>76.0%</td>
+</tr>
+<tr class="even">
+<td>Model 3 – MLP (Threshold = 0.3)</td>
+<td>82.0%</td>
+<td>55.0%</td>
+<td>43.0%</td>
+<td>48.2%</td>
+<td>69.0% (est.)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="key-limitations" class="level3">
+<h3 class="anchored" data-anchor-id="key-limitations">Key Limitations</h3>
+<p>While each model had strengths, limitations were also evident. The Decision Tree model struggled with class separation in the multiclass setting. The Logistic model failed to identify diabetic individuals effectively. The MLP model was sensitive to data preprocessing and required intensive tuning. The KNN model, while achieving excellent recall, may not scale well with larger datasets and lacked interpretability. Across the board, class imbalance remained an issue, often requiring threshold adjustment to compensate for skewed predictions.</p>
+</section>
+<section id="potential-risks-and-adjustments" class="level3">
+<h3 class="anchored" data-anchor-id="potential-risks-and-adjustments">Potential Risks and Adjustments</h3>
+<p>Model reliance on manual threshold tuning or imbalanced datasets introduces risks in deployment, especially in sensitive healthcare contexts. Future work should explore SMOTE resampling, class weighting, or cost-sensitive learning to improve diabetic class recall without sacrificing too much specificity. Building a Voting Classifier ensemble—combining logistic regression, KNN, and MLP—could stabilize predictions by leveraging the strengths of each model and reducing their individual weaknesses.</p>
+</section>
+<section id="improvements-needed-for-practical-use" class="level3">
+<h3 class="anchored" data-anchor-id="improvements-needed-for-practical-use">Improvements Needed for Practical Use</h3>
+<ol type="1">
+<li>Apply resampling methods such as SMOTE to address class imbalance.<br>
+</li>
+<li>Expand hyperparameter search space for all models, especially MLP and KNN.<br>
+</li>
+<li>Implement a Voting Classifier for ensemble predictions.<br>
+</li>
+<li>Add model explanation tools like SHAP to support clinical decision-making.</li>
+</ol>
+</section>
+<section id="final-summary" class="level3">
+<h3 class="anchored" data-anchor-id="final-summary">Final Summary</h3>
+<p>The KNN model emerged as the top performer, achieving the best recall while maintaining strong overall accuracy. The MLP model followed with a balanced performance after threshold tuning. Both significantly outperformed the logistic regression and original Decision Tree models. This project underscores the importance of careful model selection, preprocessing, and evaluation when working with imbalanced health data. With further improvements, these models have strong potential for aiding in early diabetes and prediabetes detection.</p>
+<div style="page-break-after: always;">
+
+</div>
+</section>
+</section>
+</section>
+<section id="appendix" class="level1">
+<h1>Appendix</h1>
+<p>This section contains the full modeling code and extended outputs that were removed from the main report for clarity. Each subsection corresponds to one of the models discussed in the report.</p>
+<section id="a.1-decision-tree-classifier-model-output" class="level3">
+<h3 class="anchored" data-anchor-id="a.1-decision-tree-classifier-model-output">A.1 Decision Tree Classifier Model Output</h3>
+<div id="cell-53" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> recall_class_0(y_true, y_pred):</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> recall_score(y_true, y_pred, labels<span class="op">=</span>[<span class="dv">0</span>], average<span class="op">=</span><span class="st">'macro'</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>scorer <span class="op">=</span> make_scorer(recall_class_0)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>param_grid <span class="op">=</span> {</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"max_depth"</span>: [<span class="va">None</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">20</span>],</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"min_samples_split"</span>: [<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">10</span>],</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"min_samples_leaf"</span>: [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">4</span>],</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"max_features"</span>: [<span class="va">None</span>, <span class="st">"sqrt"</span>, <span class="st">"log2"</span>]</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>cv_strategy <span class="op">=</span> StratifiedKFold(n_splits<span class="op">=</span><span class="dv">5</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>grid <span class="op">=</span> GridSearchCV(</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>    estimator<span class="op">=</span>DecisionTreeClassifier(random_state<span class="op">=</span><span class="dv">42</span>, class_weight<span class="op">=</span><span class="st">"balanced"</span>),</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>    param_grid<span class="op">=</span>param_grid,</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    scoring<span class="op">=</span>scorer,</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>    cv<span class="op">=</span>cv_strategy,</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>    n_jobs<span class="op">=-</span><span class="dv">1</span>,</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>grid.fit(X_train, y_train)</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Best Parameters:"</span>, grid.best_params_)</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Best Class 0 Recall Score:"</span>, grid.best_score_)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Fitting 5 folds for each of 108 candidates, totalling 540 fits
+Best Parameters: {'max_depth': None, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 2}
+Best Class 0 Recall Score: 0.8689528928633938</code></pre>
+</div>
+</div>
+<div id="cell-54" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>best_model <span class="op">=</span> DecisionTreeClassifier(<span class="op">**</span>grid.best_params_, random_state<span class="op">=</span><span class="dv">42</span>, class_weight<span class="op">=</span><span class="st">"balanced"</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>best_model.fit(X_train, y_train)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>y_pred <span class="op">=</span> best_model.predict(X_test)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>test_accuracy <span class="op">=</span> accuracy_score(y_test, y_pred)</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Test Accuracy: </span><span class="sc">{</span>test_accuracy<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>class_recalls <span class="op">=</span> recall_score(y_test, y_pred, average<span class="op">=</span><span class="va">None</span>, labels<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>])</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>class_labels <span class="op">=</span> [<span class="st">"No Diabetes (0)"</span>, <span class="st">"Prediabetes (1)"</span>, <span class="st">"Diabetes (2)"</span>]</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> label, recall <span class="kw">in</span> <span class="bu">zip</span>(class_labels, class_recalls):</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Sensitivity (Recall) for </span><span class="sc">{</span>label<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>recall<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Test Accuracy: 0.7834
+Sensitivity (Recall) for No Diabetes (0): 0.8673
+Sensitivity (Recall) for Prediabetes (1): 0.3314
+Sensitivity (Recall) for Diabetes (2): 0.0000</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/sklearn/metrics/_classification.py:1517: UndefinedMetricWarning: Recall is ill-defined and being set to 0.0 in labels with no true samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, f"{metric.capitalize()} is", len(result))</code></pre>
+</div>
+</div>
+<div id="cell-55" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">24</span>, <span class="dv">12</span>))</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>plot_tree(</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    best_model,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    max_depth<span class="op">=</span><span class="dv">3</span>,</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    filled<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    feature_names<span class="op">=</span>X_train.columns,</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    class_names<span class="op">=</span>[<span class="st">"No Diabetes"</span>, <span class="st">"Prediabetes"</span>, <span class="st">"Diabetes"</span>],</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>    rounded<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>    fontsize<span class="op">=</span><span class="dv">10</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Decision Tree Classifier - Best Model"</span>)</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="experiment_files/figure-html/cell-18-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="a.2-logistic-regression-code-output" class="level3">
+<h3 class="anchored" data-anchor-id="a.2-logistic-regression-code-output">A.2 Logistic Regression Code + Output</h3>
+<div id="cell-57" class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>R</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>model_glm <span class="op">&lt;-</span> glm(Diabetes_binary <span class="op">~</span> ., data <span class="op">=</span> diabetes_train, family <span class="op">=</span> <span class="st">"binomial"</span>)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(summary(model_glm))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = Diabetes_binary ~ ., family = "binomial", data = diabetes_train)
+
+Coefficients:
+                       Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)          -7.4663241  0.0965399 -77.339  &lt; 2e-16 ***
+HighBP                0.7035574  0.0154728  45.470  &lt; 2e-16 ***
+HighChol              0.5768167  0.0143957  40.069  &lt; 2e-16 ***
+CholCheck             1.2067387  0.0691757  17.445  &lt; 2e-16 ***
+BMI                   0.0620769  0.0009817  63.233  &lt; 2e-16 ***
+Smoker               -0.0096330  0.0140794  -0.684 0.493854    
+Stroke                0.1128093  0.0274261   4.113 3.90e-05 ***
+HeartDiseaseorAttack  0.2103541  0.0193664  10.862  &lt; 2e-16 ***
+PhysActivity         -0.0413393  0.0154976  -2.667 0.007643 ** 
+Fruits               -0.0405170  0.0146248  -2.770 0.005598 ** 
+Veggies              -0.0436544  0.0170391  -2.562 0.010407 *  
+HvyAlcoholConsump    -0.6454978  0.0387525 -16.657  &lt; 2e-16 ***
+AnyHealthcare         0.0366985  0.0351045   1.045 0.295834    
+NoDocbcCost           0.0815401  0.0244540   3.334 0.000855 ***
+GenHlth               0.5091199  0.0086207  59.058  &lt; 2e-16 ***
+MentHlth             -0.0017560  0.0009120  -1.925 0.054186 .  
+PhysHlth             -0.0072618  0.0008452  -8.592  &lt; 2e-16 ***
+DiffWalk              0.1333704  0.0182868   7.293 3.02e-13 ***
+Sex                   0.2443219  0.0143266  17.054  &lt; 2e-16 ***
+Age                   0.1265943  0.0029585  42.791  &lt; 2e-16 ***
+Education            -0.0400793  0.0074459  -5.383 7.34e-08 ***
+Income               -0.0553560  0.0038087 -14.534  &lt; 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 177007  on 202943  degrees of freedom
+Residual deviance: 140696  on 202922  degrees of freedom
+AIC: 140740
+
+Number of Fisher Scoring iterations: 6
+</code></pre>
+</div>
+</div>
+<div id="cell-58" class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>R</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>pred_probs <span class="op">&lt;-</span> predict(model_glm, newdata <span class="op">=</span> diabetes_test, <span class="bu">type</span> <span class="op">=</span> <span class="st">"response"</span>)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>pred_labels <span class="op">&lt;-</span> ifelse(pred_probs <span class="op">&gt;</span> <span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>accuracy <span class="op">&lt;-</span> mean(pred_labels <span class="op">==</span> diabetes_test$Diabetes_binary)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>cat(<span class="st">"Baseline GLM Accuracy (Threshold = 0.5):"</span>, accuracy, <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>confusionMatrix(factor(pred_labels), factor(diabetes_test$Diabetes_binary), positive <span class="op">=</span> <span class="st">"1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Baseline GLM Accuracy (Threshold = 0.5): 0.8493772 
+Confusion Matrix and Statistics
+
+          Reference
+Prediction     0     1
+         0 41583  6430
+         1  1212  1511
+                                          
+               Accuracy : 0.8494          
+                 95% CI : (0.8462, 0.8525)
+    No Information Rate : 0.8435          
+    P-Value [Acc &gt; NIR] : 0.0001238       
+                                          
+                  Kappa : 0.2211          
+                                          
+ Mcnemar's Test P-Value : &lt; 2.2e-16       
+                                          
+            Sensitivity : 0.19028         
+            Specificity : 0.97168         
+         Pos Pred Value : 0.55490         
+         Neg Pred Value : 0.86608         
+             Prevalence : 0.15652         
+         Detection Rate : 0.02978         
+   Detection Prevalence : 0.05367         
+      Balanced Accuracy : 0.58098         
+                                          
+       'Positive' Class : 1               
+                                          </code></pre>
+</div>
+</div>
+<div id="cell-59" class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>R</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>pred_probs <span class="op">&lt;-</span> predict(model_glm_reduced, newdata <span class="op">=</span> diabetes_test, <span class="bu">type</span> <span class="op">=</span> <span class="st">"response"</span>)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>pred_labels <span class="op">&lt;-</span> ifelse(pred_probs <span class="op">&gt;</span> <span class="fl">0.3</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>accuracy <span class="op">&lt;-</span> mean(pred_labels <span class="op">==</span> diabetes_test$Diabetes_binary)</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>cat(<span class="st">"Reduced GLM Accuracy (Threshold = 0.3):"</span>, accuracy, <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>confusionMatrix(</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  factor(pred_labels),</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  factor(diabetes_test$Diabetes_binary),</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>  positive <span class="op">=</span> <span class="st">"1"</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reduced GLM Accuracy (Threshold = 0.3): 0.8213892 
+Confusion Matrix and Statistics
+
+          Reference
+Prediction     0     1
+         0 37827  4094
+         1  4968  3847
+                                         
+               Accuracy : 0.8214         
+                 95% CI : (0.818, 0.8247)
+    No Information Rate : 0.8435         
+    P-Value [Acc &gt; NIR] : 1              
+                                         
+                  Kappa : 0.3526         
+                                         
+ Mcnemar's Test P-Value : &lt;2e-16         
+                                         
+            Sensitivity : 0.48445        
+            Specificity : 0.88391        
+         Pos Pred Value : 0.43642        
+         Neg Pred Value : 0.90234        
+             Prevalence : 0.15652        
+         Detection Rate : 0.07582        
+   Detection Prevalence : 0.17374        
+      Balanced Accuracy : 0.68418        
+                                         
+       'Positive' Class : 1              
+                                         </code></pre>
+</div>
+</div>
+</section>
+<section id="a.3-k-nearest-neighbor-code-output" class="level3">
+<h3 class="anchored" data-anchor-id="a.3-k-nearest-neighbor-code-output">A.3 K Nearest Neighbor Code + Output</h3>
+<div id="cell-61" class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>R</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>predictors <span class="op">&lt;-</span> df_train[, <span class="op">-</span>which(names(df_train) <span class="op">==</span> <span class="st">"Diabetes_binary"</span>)]</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>predictors_scaled <span class="op">&lt;-</span> scale(predictors)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>pca_result <span class="op">&lt;-</span> prcomp(predictors_scaled, center <span class="op">=</span> TRUE, scale. <span class="op">=</span> TRUE)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>pca_scores <span class="op">&lt;-</span> pca_result$x</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>pca_selected <span class="op">&lt;-</span> pca_scores[, <span class="dv">1</span>:<span class="dv">17</span>]</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>data_knn <span class="op">&lt;-</span> data.frame(pca_selected, Diabetes_binary <span class="op">=</span> factor(df_train$Diabetes_binary))</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>cv_control <span class="op">&lt;-</span> trainControl(method <span class="op">=</span> <span class="st">"cv"</span>, number <span class="op">=</span> <span class="dv">10</span>)</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>knn_fit_compare <span class="op">&lt;-</span> train(Diabetes_binary <span class="op">~</span> ., data <span class="op">=</span> data_knn, method <span class="op">=</span> <span class="st">"knn"</span>, trControl <span class="op">=</span> cv_control, tuneGrid <span class="op">=</span> expand.grid(k <span class="op">=</span> <span class="dv">37</span>))</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(knn_fit_compare)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>k-Nearest Neighbors 
+
+202944 samples
+    17 predictor
+     2 classes: '0', '1' 
+
+No pre-processing
+Resampling: Cross-Validated (10 fold) 
+Summary of sample sizes: 182649, 182649, 182649, 182650, 182650, 182650, ... 
+Resampling results:
+
+  Accuracy  Kappa    
+  0.846603  0.1701837
+
+Tuning parameter 'k' was held constant at a value of 37</code></pre>
+</div>
+</div>
+<div id="cell-62" class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>R</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>knn_pred <span class="op">=</span> knn(train <span class="op">=</span> diabetes_train, test <span class="op">=</span> diabetes_test, cl <span class="op">=</span> diabetes_train$Diabetes_binary, k <span class="op">=</span> <span class="dv">5</span>)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>confusionMatrix(knn_pred, factor(diabetes_test$Diabetes_binary))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction     0     1
+         0 42211  3600
+         1   584  4341
+                                          
+               Accuracy : 0.9175          
+                 95% CI : (0.9151, 0.9199)
+    No Information Rate : 0.8435          
+    P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
+                                          
+                  Kappa : 0.6305          
+                                          
+ Mcnemar's Test P-Value : &lt; 2.2e-16       
+                                          
+            Sensitivity : 0.9864          
+            Specificity : 0.5467          
+         Pos Pred Value : 0.9214          
+         Neg Pred Value : 0.8814          
+             Prevalence : 0.8435          
+         Detection Rate : 0.8320          
+   Detection Prevalence : 0.9029          
+      Balanced Accuracy : 0.7665          
+                                          
+       'Positive' Class : 0               
+                                          </code></pre>
+</div>
+</div>
+</section>
+<section id="a.4-neural-network-code-output" class="level3">
+<h3 class="anchored" data-anchor-id="a.4-neural-network-code-output">A.4 Neural Network Code + Output</h3>
+<div id="cell-64" class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> recall_class_1(y_true, y_pred):</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> recall_score(y_true, y_pred, labels<span class="op">=</span>[<span class="dv">1</span>], average<span class="op">=</span><span class="st">'macro'</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>scorer <span class="op">=</span> make_scorer(recall_class_1)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>pipeline <span class="op">=</span> Pipeline([</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'scaler'</span>, StandardScaler()),</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>    (<span class="st">'mlp'</span>, MLPClassifier(random_state<span class="op">=</span><span class="dv">42</span>))</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>param_grid <span class="op">=</span> {</span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">'mlp__activation'</span>: [<span class="st">'relu'</span>],</span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">'mlp__hidden_layer_sizes'</span>: [(<span class="dv">100</span>,)],</span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">'mlp__solver'</span>: [<span class="st">'adam'</span>],</span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">'mlp__alpha'</span>: [<span class="fl">0.0001</span>],</span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">'mlp__max_iter'</span>: [<span class="dv">200</span>]</span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a>nn_model <span class="op">=</span> GridSearchCV(</span>
+<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a>    pipeline, </span>
+<span id="cb38-21"><a href="#cb38-21" aria-hidden="true" tabindex="-1"></a>    param_grid, </span>
+<span id="cb38-22"><a href="#cb38-22" aria-hidden="true" tabindex="-1"></a>    cv<span class="op">=</span><span class="dv">3</span>, </span>
+<span id="cb38-23"><a href="#cb38-23" aria-hidden="true" tabindex="-1"></a>    scoring<span class="op">=</span>scorer, </span>
+<span id="cb38-24"><a href="#cb38-24" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="dv">1</span>, </span>
+<span id="cb38-25"><a href="#cb38-25" aria-hidden="true" tabindex="-1"></a>    n_jobs<span class="op">=-</span><span class="dv">1</span></span>
+<span id="cb38-26"><a href="#cb38-26" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb38-27"><a href="#cb38-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-28"><a href="#cb38-28" aria-hidden="true" tabindex="-1"></a>nn_model.fit(X_train, y_train)</span>
+<span id="cb38-29"><a href="#cb38-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-30"><a href="#cb38-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Best Parameters:"</span>, nn_model.best_params_)</span>
+<span id="cb38-31"><a href="#cb38-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Best Cross-Validated Recall:"</span>, nn_model.best_score_)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Fitting 3 folds for each of 1 candidates, totalling 3 fits
+Best Parameters: {'mlp__activation': 'relu', 'mlp__alpha': 0.0001, 'mlp__hidden_layer_sizes': (100,), 'mlp__max_iter': 200, 'mlp__solver': 'adam'}
+Best Cross-Validated Recall: 0.20392701784693681</code></pre>
+</div>
+</div>
+<div id="cell-65" class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>y_proba <span class="op">=</span> nn_model.predict_proba(X_test)[:, <span class="dv">1</span>]</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>y_pred<span class="op">=</span> (y_proba <span class="op">&gt;=</span> <span class="fl">0.3</span>).astype(<span class="bu">int</span>)</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>cm <span class="op">=</span> confusion_matrix(y_test, y_pred)</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Confusion Matrix (Threshold = 0.3):"</span>)</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cm)</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(classification_report(y_test, y_pred))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix (Threshold = 0.3):
+[[37114  5681]
+ [ 3608  4333]]
+              precision    recall  f1-score   support
+
+           0       0.91      0.87      0.89     42795
+           1       0.43      0.55      0.48      7941
+
+    accuracy                           0.82     50736
+   macro avg       0.67      0.71      0.69     50736
+weighted avg       0.84      0.82      0.83     50736
+</code></pre>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
