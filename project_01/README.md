@@ -44,7 +44,8 @@ This project demonstrates an end-to-end data science workflow, including data pr
    git clone https://github.com/your-username/your-repo-name.git
    cd your-repo-name
 2. Launch Jupyter Notebook:
-    ```jupyter notebook notebook_name.ipynb
+    ```bash
+    jupyter notebook notebook_name.ipynb
 3. Run all cells to reproduce the analysis.
 
 ## Author
