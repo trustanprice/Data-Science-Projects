@@ -1,4 +1,4 @@
-# Project Title
+# NBA Correlations Study
 
 ## Project Overview
 This project explores [briefly describe the main purpose of the notebook, e.g., predicting X, analyzing Y dataset, or visualizing Z trends]. The notebook demonstrates data preprocessing, exploratory analysis, modeling, and evaluation.
