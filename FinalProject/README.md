@@ -90,7 +90,7 @@ Marta Przybylska (martap4@illinois.edu)
 Nate White (nathanw7@illinois.edu) 
 – Implemented the KNN code.
 
-**Trustan Gabriel Price (tpric5@illinois.edu) **
+**Trustan Gabriel Price (tpric5@illinois.edu)**
 – Developed all other code and analyses, wrote discussions, and compiled the final project report for submission.
 
 University of Illinois Urbana-Champaign
