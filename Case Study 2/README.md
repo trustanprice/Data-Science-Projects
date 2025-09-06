@@ -1,4 +1,4 @@
-# Wine Alcohol Content Prediction
+# Case Study: Wine Alcohol Content Prediction
 
 ## Project Overview
 This project focuses on building predictive models to estimate the alcohol content of wines using various chemical properties and measurements. Multiple modeling approaches were explored, including subset selection, Weighted Least Squares (WLS), Ridge, Lasso, and Principal Component Regression (PCR). The analysis addressed challenges such as heteroscedasticity, multicollinearity, and influential points to ensure valid model assumptions and robust predictions.
