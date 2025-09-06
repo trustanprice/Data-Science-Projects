@@ -63,5 +63,7 @@ The dataset (`wines.csv`) contains chemical measurements and type classification
 ## Author
 
 Trustan Gabriel Price
+
 University of Illinois Urbana-Champaign
+
 B.S. in Statistics, Minors in Computer Science and Data Science
