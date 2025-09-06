@@ -58,9 +58,13 @@ Example predictions compared to actual values:
    ```bash
    git clone https://github.com/your-username/stat425-case-study1.git
    cd stat425-case-study1
+2. Open the R scripts or R Markdown files.
+3. Run the code to reproduce data exploration, regression models, and plots.
 
 ## Author
 
 Trustan Gabriel Price
+
 University of Illinois Urbana-Champaign
+
 Course: STAT 425 – Case Studies in Statistical Analysis
