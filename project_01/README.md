@@ -62,11 +62,11 @@ This project investigates whether specific audio features can explain why some s
    ```bash
    git clone https://github.com/your-username/data-science-projects.git
    cd data-science-projects/song-popularity
-   
+   ```
 2. Install dependencies:
   ```bash
    pip install pandas numpy scikit-learn matplotlib seaborn
-
+  ```
 3. Open the Jupyter Notebook and run all cells to reproduce the analysis.
 
 ## Author
