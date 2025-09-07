@@ -1,52 +1,71 @@
-# Project Title
+# What Makes a Song a Bop?
 
 ## Project Overview
-This project demonstrates an end-to-end data science workflow, including data preprocessing, exploratory data analysis (EDA), model development, and evaluation. The notebook provides reproducible steps for analyzing the dataset, applying statistical/machine learning methods, and interpreting results.
+This project investigates whether specific audio features can explain why some songs become popular or “bops.” Using a dataset of over 114,000 tracks scraped from the Spotify API, we explored the relationship between **tempo**, **explicit content**, and **song popularity**. Through data cleaning, correlation analysis, and regression modeling, we tested whether these features significantly contribute to a song’s success.
 
 ## Dataset
-- **Source**: [Insert source, e.g., Kaggle, UCI ML Repository, class dataset]  
-- **Size**: [Number of rows, columns]  
-- **Features**: [Key features/variables used]  
-- **Target Variable**: [What the model is predicting]
+- **Source**: [Spotify Dataset (Kaggle)](https://www.kaggle.com/datasets/priyamchoksi/spotify-dataset-114k-songs/data)  
+- **Size**: 114,000 tracks × 21 features  
+- **Unit of Observation**: Song  
+- **Key Features**:
+  - `popularity` – Spotify popularity score (0–100)  
+  - `tempo` – tempo of the track (BPM)  
+  - `explicit` – whether the track is explicit (binary)  
+  - Other features: danceability, energy, loudness, speechiness, valence, etc.  
+- **Limitations**:
+  - Some values are estimated (e.g., time signature).  
+  - Over 100 unique genres → noisy category variable.  
+  - Popularity is subjective and influenced by external factors (e.g., marketing, culture).  
 
-## Workflow
-1. **Data Preprocessing**  
-   - Cleaning and handling missing values  
-   - Encoding categorical variables  
-   - Normalization or standardization  
+## Methodology
+1. **Data Cleaning**
+   - Removed a single row with missing `artist`, `album_name`, and `track_name`.  
+   - Dropped songs with `tempo = 0` (invalid values).  
+   - Converted `explicit` to binary (0 = not explicit, 1 = explicit).  
 
-2. **Exploratory Data Analysis**  
-   - Summary statistics  
-   - Visualizations (histograms, correlation heatmaps, boxplots)  
-   - Identification of outliers and trends  
+2. **Exploratory Data Analysis**
+   - Distribution of song features.  
+   - Comparison of explicit vs non-explicit tracks.  
+   - Boxplots and correlation analysis of tempo, explicitness, and popularity.  
 
-3. **Modeling**  
-   - Algorithms applied: [e.g., Logistic Regression, Decision Trees, KNN, Neural Networks]  
-   - Hyperparameter tuning methods  
-   - Train/test or cross-validation strategy  
-
-4. **Evaluation**  
-   - Metrics: [e.g., Accuracy, Precision, Recall, RMSE, AUC]  
-   - Best-performing model summary  
+3. **Modeling**
+   - Correlation matrix of `tempo`, `explicit`, and `popularity`.  
+   - Simple **linear regression** with predictors: `tempo` and `explicit`.  
+   - Visualization of residuals and fitted values.  
 
 ## Results
-- Key insights: [Highlight findings from analysis or modeling]  
-- Best model performance: [Accuracy/score achieved]  
-- Observations: [Patterns, relationships, or important variables discovered]  
+- **Correlation Findings**:
+  - Popularity vs Tempo: ~0.014 → no meaningful relationship.  
+  - Popularity vs Explicit: ~0.044 → very weak positive relationship.  
+- **Regression Findings**:
+  - Neither tempo nor explicit content significantly predicts popularity.  
+  - Residual plots and fitted values confirm lack of linearity.  
+- **Visualization**:
+  - Tempo vs Popularity plot shows almost no trend.  
+  - Boxplots show explicit and non-explicit songs have nearly identical popularity distributions.  
+
+## Conclusion
+- Tempo and explicit content do **not** strongly influence whether a song becomes a “bop.”  
+- Popularity is likely driven by other factors such as **genre, artist reputation, cultural trends, and marketing strategies**.  
+- Future work could:
+  - Expand features (e.g., genre grouping, lyrical sentiment, artist-level popularity).  
+  - Apply advanced models (Random Forest, Neural Networks) to capture non-linear patterns.  
+  - Incorporate listener feedback and social media sentiment for richer context.  
 
 ## Tools and Technologies
-- **Languages**: Python  
-- **Libraries**: Pandas, NumPy, Matplotlib, Seaborn, Scikit-learn, Jupyter Notebook  
+- **Language**: Python  
+- **Libraries**: Pandas, NumPy, Scikit-learn, Seaborn, Matplotlib  
+- **Techniques**: Data cleaning, correlation analysis, linear regression, visualization  
 
 ## How to Run
 1. Clone the repository:  
    ```bash
-   git clone https://github.com/your-username/your-repo-name.git
-   cd your-repo-name
-2. Launch Jupyter Notebook:
-    ```bash
-    jupyter notebook notebook_name.ipynb
-3. Run all cells to reproduce the analysis.
+   git clone https://github.com/your-username/data-science-projects.git
+   cd data-science-projects/song-popularity
+2. Install dependencies:
+  ```bash
+   pip install pandas numpy scikit-learn matplotlib seaborn
+3. Open the Jupyter Notebook and run all cells to reproduce the analysis.
 
 ## Author
 
